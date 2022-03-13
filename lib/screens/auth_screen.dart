@@ -21,11 +21,6 @@ class _AuthScreenState extends State<AuthScreen> {
     bool isLogin,
   ) async {
     try {
-      await Firebase.initializeApp();
-    } catch (error) {
-      return;
-    }
-    try {
       setState(() {
         _isLoading = true;
       });
