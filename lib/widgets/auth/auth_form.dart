@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:chat_app/widgets/pickers/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
@@ -5,6 +8,7 @@ class AuthForm extends StatefulWidget {
     String email,
     String password,
     String userName,
+    File image,
     bool isLogin,
   ) submitFn;
   final bool isLoading;
@@ -20,6 +24,11 @@ class _AuthFormState extends State<AuthForm> {
   var _userEmail = '';
   var _userName = '';
   var _userPassword = '';
+  File? _userImageFile;
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
+  }
 
   void _trySubmit() {
     if (_formKey.currentState == null) {
@@ -27,6 +36,15 @@ class _AuthFormState extends State<AuthForm> {
     }
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus(); // Closes the soft keyboard
+
+    if (_userImageFile == null && !_isLogin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please pick an image!'),
+        ),
+      );
+      return;
+    }
 
     if (!isValid) {
       return;
@@ -36,6 +54,7 @@ class _AuthFormState extends State<AuthForm> {
       _userEmail.trim(),
       _userPassword.trim(),
       _userName.trim(),
+      _userImageFile!,
       _isLogin,
     );
   }
@@ -53,6 +72,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (!_isLogin) UserImagePicker(_pickedImage),
                   TextFormField(
                     key: const ValueKey('email'),
                     validator: (value) {
